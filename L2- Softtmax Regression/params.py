@@ -6,6 +6,7 @@ train_iter, test_iter = load_data_fashion_mnist(batch_size)
 net=Softmax
 net.apply(init_weights)
 
+# https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html
 loss = nn.CrossEntropyLoss(reduction='none')
 
 trainer = torch.optim.SGD(net.parameters(), lr=0.1)

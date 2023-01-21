@@ -3,7 +3,7 @@ from utils import Accumulator, accuracy, evaluate_accuracy
 
 def train_epoch(net, train_iter, loss, updater):
     """The training loop defined in Chapter 3."""
-    # Set the model to training mode
+    # Set the model to the training mode, turning on some layers like dropout and computing gradients
     if isinstance(net, torch.nn.Module):
         net.train()
     # Sum of training loss, sum of training accuracy, no. of examples
@@ -11,10 +11,17 @@ def train_epoch(net, train_iter, loss, updater):
     for X, y in train_iter:
         # Compute gradients and update parameters
         y_hat = net(X)
+        # shape of y_hat: batch_size * num_outputs
+        # shape of y: batch_size * 1
+        # shape of output: batch_size * 1
         l = loss(y_hat, y)
         if isinstance(updater, torch.optim.Optimizer):
             # Using PyTorch in-built optimizer & loss criterion
             updater.zero_grad()
+            # Actually, this is equivalent to using reduction = 'mean'(by default) in nn.CrossEntropyLoss
+            # that is: loss = nn.CrossEntropyLoss()
+            # If using l.backward() here, you will get an error:
+            # RuntimeError: grad can be implicitly created only for scalar outputs
             l.mean().backward()
             updater.step()
         else:
